@@ -14,10 +14,9 @@ Permitir que o usuário remova e edite as imagens da galeria.
 
 ✅ Tarefas Obrigatórias
 **1. Criação de Diagramas**
-Diagrama de Caso de Uso: deve mostrar as interações do usuário (ex:
-adicionar imagem, remover imagem, visualizar galeria).
-Diagrama Entidade-Relacionamento (DER): deve representar a
-estrutura do banco de dados com a tabela imagens.
+Diagrama de Caso de Uso: deve mostrar as interações do usuário (ex:adicionar imagem, remover imagem, visualizar galeria).
+
+Diagrama Entidade-Relacionamento (DER): deve representar aestrutura do banco de dados com a tabela imagens.
 
 **2. Banco de Dados (MySQL)**
 Criar banco chamado banco_imagens.
