@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Banco de Imagens</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-blue-500 p-6">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold text-center mb-6">Banco de Imagens</h1>
+
+    <!-- Formulário de Cadastro -->
+    <form id="imageForm" class="bg-white p-4 rounded shadow mb-6 flex flex-col gap-4">
+      <input id="nome" type="text" placeholder="Nome do Autor" class="p-2 border rounded" required />
+      <input id="url" type="url" placeholder="URL da Imagem" class="p-2 border rounded" required />
+      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+        Adicionar
+      </button>
+    </form>
+
+    <!-- Galeria de Imagens -->
+    <div id="galeria" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+  </div>
+
+  <script src="./Front/assents/js/index.js"></script>
+</body>
+</html>
