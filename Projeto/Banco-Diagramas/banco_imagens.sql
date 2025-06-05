@@ -1,0 +1,9 @@
+CREATE DATABASE IF NOT EXISTS banco_imagens;
+
+USE banco_imagens;
+
+CREATE TABLE IF NOT EXISTS imagens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    url TEXT NOT NULL
+);
