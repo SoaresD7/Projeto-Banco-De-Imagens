@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.banco_imagens.model.Imagens;
 import com.example.banco_imagens.service.ImagensService;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/imagens")
 public class ImagensController {
@@ -38,7 +40,7 @@ public class ImagensController {
     }
 
     @PostMapping
-    public Alunos salvar(@RequestBody Imagens imagens) {
+    public Imagens salvar(@RequestBody Imagens imagens) {
         return service.salvar(imagens);
     }
 
@@ -47,7 +49,7 @@ public class ImagensController {
         if (!service.buscarPorId(id).isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        alunos.setId(id);
+        imagens.setId(id);
         return ResponseEntity.ok(service.salvar(imagens));
     }
 

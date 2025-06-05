@@ -21,7 +21,7 @@ public class ImagensService {
         return repository.findById(id);
     }
 
-    public Alunos salvar(Imagens imagens) {
+    public Imagens salvar(Imagens imagens) {
         return repository.save(imagens);
     }
 

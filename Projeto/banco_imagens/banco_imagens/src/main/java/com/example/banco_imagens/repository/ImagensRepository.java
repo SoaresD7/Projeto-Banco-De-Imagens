@@ -4,7 +4,7 @@ package com.example.banco_imagens.repository;
 import org.springframework.data.jpa.repository.JpaRepository; // Interface que fornece métodos prontos para CRUD
 import org.springframework.stereotype.Repository; // Anotação para identificar como um repositório
 
-import com.example.banco_imagens.model.Imagens;
+import com.example.banco_imagens.model.Imagens; // Importa a classe Imagens que representa a entidade
 
 /**
  * Anotação para indicar que esta interface é um repositório Spring.

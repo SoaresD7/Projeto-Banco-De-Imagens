@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Alunos {
+public class Imagens {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,7 +19,7 @@ public class Alunos {
     @Column(nullable = false)
     private String nome;
 
-    @Column(length = 150)
+
     private String url;
     
 }

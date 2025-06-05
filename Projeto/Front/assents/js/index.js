@@ -1,65 +1,128 @@
-const API_URL = "http://localhost:3000/imagens"; // Altere conforme a URL da sua API
-const galeria = document.getElementById("galeria");
-const form = document.getElementById("imageForm");
+const API_URL = "http://localhost:8080/api/imagens";
+const tabela = document.getElementById("tabelaImagens");
 
-// Carregar imagens da API
+// Carrega imagens da API
 async function carregarImagens() {
-  galeria.innerHTML = "";
-  const res = await fetch(API_URL);
-  const imagens = await res.json();
-
-  imagens.forEach(img => {
-    const div = document.createElement("div");
-    div.className = "bg-white rounded shadow p-2 flex flex-col items-center";
-
-    div.innerHTML = `
-      <img src="${img.url}" alt="Imagem de ${img.nome}" class="w-full h-40 object-cover rounded mb-2" />
-      <p class="text-lg font-semibold">${img.nome}</p>
-      <div class="flex gap-2 mt-2">
-        <button onclick="removerImagem(${img.id})" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Remover</button>
-        <button onclick="editarImagem(${img.id}, '${img.nome}', '${img.url}')" class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">Editar</button>
-      </div>
-    `;
-    galeria.appendChild(div);
-  });
-}
-
-// Adicionar nova imagem
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const nome = document.getElementById("nome").value;
-  const url = document.getElementById("url").value;
-
-  await fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ nome, url })
-  });
-
-  form.reset();
-  carregarImagens();
-});
-
-// Remover imagem
-async function removerImagem(id) {
-  await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-  carregarImagens();
-}
-
-// Editar imagem
-async function editarImagem(id, nomeAtual, urlAtual) {
-  const novoNome = prompt("Novo nome:", nomeAtual);
-  const novaUrl = prompt("Nova URL da imagem:", urlAtual);
-
-  if (novoNome && novaUrl) {
-    await fetch(`${API_URL}/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nome: novoNome, url: novaUrl })
-    });
-    carregarImagens();
+  tabela.innerHTML = "";
+  try {
+    const res = await fetch(API_URL);
+    const imagens = await res.json();
+    imagens.forEach(img => adicionarLinha(img));
+  } catch (err) {
+    console.error("Erro ao carregar imagens:", err);
   }
 }
 
-// Inicializar galeria ao carregar a página
+function adicionarLinha({ id = "-", nome, url }) {
+  const linha = document.createElement("tr");
+  linha.innerHTML = `
+    <td class="px-4 py-2">${id}</td>
+    <td class="px-4 py-2">${nome}</td>
+    <td class="px-4 py-2"><a href="${url}" target="_blank" class="text-blue-600 underline">${url}</a></td>
+    <td class="px-4 py-2">
+      <button onclick="editarImagem(this)" class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">Editar</button>
+    </td>
+    <td class="px-4 py-2">
+      <button onclick="removerImagem(this)" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Remover</button>
+    </td>
+  `;
+  tabela.appendChild(linha);
+}
+
+// Adiciona nova imagem
+async function adicionarImagem(event) {
+  event.preventDefault();
+
+  const nome = document.getElementById("nome").value.trim();
+  const url = document.getElementById("url").value.trim();
+
+  if (!nome || !url) return;
+
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nome, url })
+    });
+    const novaImagem = await response.json();
+    adicionarLinha(novaImagem);
+
+    document.getElementById("imageForm").reset();
+    Swal.fire("Sucesso", "Imagem adicionada!", "success");
+  } catch (err) {
+    console.error("Erro ao adicionar imagem:", err);
+    Swal.fire("Erro", "Falha ao enviar imagem", "error");
+  }
+}
+
+// Editar imagem
+async function editarImagem(botao) {
+  const linha = botao.closest("tr");
+  const id = linha.children[0].textContent;
+  const nomeAtual = linha.children[1].textContent;
+  const urlAtual = linha.children[2].textContent;
+
+  const { value: dados } = await Swal.fire({
+    title: "Editar Imagem",
+    html: `
+      <input id="swal-nome" class="swal2-input" value="${nomeAtual}" placeholder="Nome">
+      <input id="swal-url" class="swal2-input" value="${urlAtual}" placeholder="URL">
+    `,
+    focusConfirm: false,
+    showCancelButton: true,
+    preConfirm: () => {
+      const nome = document.getElementById("swal-nome").value.trim();
+      const url = document.getElementById("swal-url").value.trim();
+      if (!nome || !url) {
+        Swal.showValidationMessage("Preencha todos os campos");
+        return false;
+      }
+      return { nome, url };
+    }
+  });
+
+  if (dados && id !== "-") {
+    try {
+      await fetch(`${API_URL}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dados)
+      });
+      linha.children[1].textContent = dados.nome;
+      linha.children[2].innerHTML = `<a href="${dados.url}" target="_blank" class="text-blue-600 underline">${dados.url}</a>`;
+      Swal.fire("Atualizado!", "A imagem foi atualizada.", "success");
+    } catch (err) {
+      console.error("Erro ao editar imagem:", err);
+      Swal.fire("Erro", "Falha ao atualizar imagem", "error");
+    }
+  }
+}
+
+// Remover imagem
+async function removerImagem(botao) {
+  const linha = botao.closest("tr");
+  const id = linha.children[0].textContent;
+
+  const confirmacao = await Swal.fire({
+    title: "Tem certeza?",
+    text: "Essa imagem será removida!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Sim, remover",
+    cancelButtonText: "Cancelar"
+  });
+
+  if (confirmacao.isConfirmed && id !== "-") {
+    try {
+      await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+      linha.remove();
+      Swal.fire("Removido!", "Imagem excluída com sucesso.", "success");
+    } catch (err) {
+      console.error("Erro ao remover imagem:", err);
+      Swal.fire("Erro", "Não foi possível remover a imagem", "error");
+    }
+  }
+}
+
+// Inicializa
 carregarImagens();
